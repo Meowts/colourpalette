@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html ng-app="colours">
+	<head>
+		<script type="text/javascript" src="angular.js"></script>
+		<script type="text/javascript" src="app.js"></script>
+
+		<style>
+			table, table td {
+				border: 1px solid black;
+			}
+			td {
+				height: 100px;
+				width: 100px;
+			}
+			input {
+				width: 96px;
+			}
+			#top, #bottom {
+				float: left;
+				position: absolute;
+			}
+			#top {
+				z-index: 5;
+			}
+			.p70 {
+				opacity: 0.7;
+			}
+			.p30 {
+				opacity: 0.3;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="container" ng-controller="ColourCtrl as ctrl">
+			<table>
+				<tr>
+					<td id="twoIn">
+						<input ng-model="settings.opacityA"/>
+						<input ng-model="settings.opacityB"/>
+					</td>
+					<td><input ng-model="colours.c1"/></td>
+					<td><input ng-model="colours.c2"/></td>
+					<td><input ng-model="colours.c3"/></td>
+					<td><input ng-model="colours.c4"/></td>
+					<td><input ng-model="colours.c5"/></td>
+					<td><input ng-model="colours.c6"/></td>
+					<td><input ng-model="colours.c7"/></td>
+				</tr>
+			</table>
+			
+			<table id="bottom">
+				<tr ng-repeat='row in bottomTable'>
+					<td ng-repeat="column in row track by $index" class="{{ column }}" 
+					ng-style="$index != 0 ? { 'opacity':settings.opacityA } : ''" 
+					style="background-color :{{ colours[column] }}"></td>
+				</tr>
+			</table>
+
+			<table id="top">
+				<tr ng-repeat='row in topTable'>
+					<td ng-repeat="column in row track by $index" class="{{ column }}"
+					ng-style="$index != 0 ? { 'opacity':settings.opacityB } : ''" 
+					style="background-color: {{ colours[column] }}"></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
