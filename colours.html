@@ -12,57 +12,49 @@
 			td {
 				height: 100px;
 				width: 100px;
+				vertical-align: bottom;
 			}
 			input {
 				width: 96px;
 			}
-			#top, #bottom {
-				float: left;
-				position: absolute;
+			.opacity-input {
+				width: 36%;
+				display: inline;
 			}
-			#top {
-				z-index: 5;
-			}
-			.p70 {
-				opacity: 0.7;
-			}
-			.p30 {
-				opacity: 0.3;
+			#colon {
+				padding-left: 3px;
+				padding-right: 4px;
+				color: white;
 			}
 		</style>
 	</head>
 
 	<body>
-		<div id="container" ng-controller="ColourCtrl as ctrl">
+		<div id="container" ng-controller="ColourCtrl as ctrl">			
 			<table>
-				<tr>
-					<td id="twoIn">
-						<input ng-model="settings.opacityA"/>
-						<input ng-model="settings.opacityB"/>
+				<tr ng-repeat='row in table track by $index'>
+					
+					<!-- Show base colour -->
+					<td 
+						ng-if="$parent.$index == 0" 
+						ng-repeat="column in row track by $index"
+						style="background-color : {{ colours[column] }}"
+					>
+						<input ng-model="colours[column]" ng-keyup="calcColours(true, $index, colours[column])" ng-show="$parent.$index != 0"/>
+						<input ng-model="settings.opacityA" class="opacity-input" ng-keyup="calcColours(false, null, null)" ng-show="$parent.$index == 0"/>
+						<span id="colon" ng-show="$parent.$index == 0">:</span>
+						<input ng-model="settings.opacityB" class="opacity-input" ng-keyup="calcColours(false, null, null)" ng-show="$parent.$index == 0"/>
+						
 					</td>
-					<td><input ng-model="colours.c1"/></td>
-					<td><input ng-model="colours.c2"/></td>
-					<td><input ng-model="colours.c3"/></td>
-					<td><input ng-model="colours.c4"/></td>
-					<td><input ng-model="colours.c5"/></td>
-					<td><input ng-model="colours.c6"/></td>
-					<td><input ng-model="colours.c7"/></td>
-				</tr>
-			</table>
-			
-			<table id="bottom">
-				<tr ng-repeat='row in bottomTable'>
-					<td ng-repeat="column in row track by $index" class="{{ column }}" 
-					ng-style="$index != 0 ? { 'opacity':settings.opacityA } : ''" 
-					style="background-color :{{ colours[column] }}"></td>
-				</tr>
-			</table>
 
-			<table id="top">
-				<tr ng-repeat='row in topTable'>
-					<td ng-repeat="column in row track by $index" class="{{ column }}"
-					ng-style="$index != 0 ? { 'opacity':settings.opacityB } : ''" 
-					style="background-color: {{ colours[column] }}"></td>
+					<!-- Show calculated colour -->
+					<td 
+						ng-if="$parent.$index != 0" ng-repeat="column in row track by $index"
+						ng-style="$index != 0 ? { 'background-color' : calculatedColours[$parent.$parent.$index][column] } : { 'background-color' : colours[column] }"
+					>
+						{{ calculatedColours[$parent.$parent.$index][column] }}
+						{{ $index != 0 ? getRGB(calculatedColours[$parent.$parent.$index][column]) : '' }}
+					</td>
 				</tr>
 			</table>
 		</div>
