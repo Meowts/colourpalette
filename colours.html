@@ -40,10 +40,10 @@
 						ng-repeat="column in row track by $index"
 						style="background-color : {{ colours[column] }}"
 					>
-						<input ng-model="colours[column]" ng-keyup="calcColours(true, $index, colours[column])" ng-show="$parent.$index != 0"/>
-						<input ng-model="settings.opacityA" class="opacity-input" ng-keyup="calcColours(false, null, null)" ng-show="$parent.$index == 0"/>
+						<input ng-model="colours[column]" ng-keyup="calcColours(colours, settings, $index, colours[column])" ng-show="$parent.$index != 0"/>
+						<input ng-model="settings.opacityA" class="opacity-input" ng-keyup="calcColours(colours, settings, null, null)" ng-show="$parent.$index == 0"/>
 						<span id="colon" ng-show="$parent.$index == 0">:</span>
-						<input ng-model="settings.opacityB" class="opacity-input" ng-keyup="calcColours(false, null, null)" ng-show="$parent.$index == 0"/>
+						<input ng-model="settings.opacityB" class="opacity-input" ng-keyup="calcColours(colours, settings, null, null)" ng-show="$parent.$index == 0"/>
 						
 					</td>
 
