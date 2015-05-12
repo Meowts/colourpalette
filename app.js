@@ -1,6 +1,6 @@
 /*
 *
-*	Colours! By Benjamin Coleman
+*	ColourMixer! By Benjamin Coleman aka Meowts
 *	May 2015
 *
 *	The premis of this lil' app is to create a unified colour palette from whichever base colours you choose.
