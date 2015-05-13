@@ -47,7 +47,7 @@
 									<input 
 										ng-model="settings.opacityA" 
 										class="opacity-input" 
-										ng-keyup="calcColours(colours, settings, null, null)" 
+										ng-keyup="calcColours(colours, settings, null, null, false)" 
 										ng-show="$parent.$index == 0"
 									/>
 								</td>
@@ -55,7 +55,7 @@
 									<input 
 										ng-model="settings.opacityB" 
 										class="opacity-input" 
-										ng-keyup="calcColours(colours, settings, null, null)" 
+										ng-keyup="calcColours(colours, settings, null, null, false)" 
 										ng-show="$parent.$index == 0"
 									/>
 								</td>
@@ -67,17 +67,17 @@
 					<td 
 						ng-if="$parent.$index == 0 && $index != 0" 
 						ng-repeat="column in row track by $index"
-						style="background-color : {{ colours[column] }}"
+						style="background-color : {{ colours[column]['hex'] }}"
 					>
 						<!-- Colour controls -->
 						<input 
-							ng-model="colours[column]" 
-							ng-keyup="calcColours(colours, settings, $index, colours[column], false)" 
+							ng-model="colours[column]['hex']" 
+							ng-keyup="calcColours(colours, settings, $index, colours[column]['hex'], false)" 
 							ng-show="$parent.$index != 0"
 						/>
 						<input
-							ng-model="RGB[column]"
-							ng-keyup="calcColours(coloursRGB, settings, $index, coloursRGB[column], true)"
+							ng-model="colours[column]['rgb']"
+							ng-keyup="calcColours(colours, settings, $index, colours[column]['rgb'], true)"
 							ng-show="$parent.$index != 0"
 						/>
 					</td>
@@ -85,7 +85,7 @@
 					<!-- Show calculated colours -->
 					<td 
 						ng-if="$parent.$index != 0" ng-repeat="column in row track by $index"
-						ng-style="$index != 0 ? { 'background-color' : calculatedColours[$parent.$parent.$index][column] } : { 'background-color' : colours[column] }"
+						ng-style="$index != 0 ? { 'background-color' : calculatedColours[$parent.$parent.$index][column] } : { 'background-color' : colours[column]['hex'] }"
 					>
 						{{ calculatedColours[$parent.$parent.$index][column] }}
 						{{ $index != 0 ? getRGB(calculatedColours[$parent.$parent.$index][column]) : '' }}

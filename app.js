@@ -28,36 +28,43 @@ colours.controller('ColourCtrl', function($scope, ColourMixer){
 		opacityB : 0.3
 	};
 
-	//To display average opacity
-	//$scope.greyScale = ColourMixer.getHex(ColourMixer.applyWhiteBase([0,0,0], (($scope.settings.opacityA + $scope.settings.opacityB) / 2)));
-
-	//Initialize the app with the base colours defined...
+	//Initialize the app with the base colours defined
 	$scope.colours = {
-		c1 : "#FFFFFF",
-		c2 : "#B200FF",
-		c3 : "#0094FF",
-		c4 : "#00FF21",
-		c5 : "#FFD800",
-		c6 : "#FF6A00",
-		c7 : "#FF0000"
-	};
-
-	//... along with their respective RGB values
-	$scope.coloursRGB = {
-		c1 : ColourMixer.getRGB($scope.colours.c1),
-		c2 : ColourMixer.getRGB($scope.colours.c2),
-		c3 : ColourMixer.getRGB($scope.colours.c3),
-		c4 : ColourMixer.getRGB($scope.colours.c4),
-		c5 : ColourMixer.getRGB($scope.colours.c5),
-		c6 : ColourMixer.getRGB($scope.colours.c6),
-		c7 : ColourMixer.getRGB($scope.colours.c7)
+		c1 : {
+			hex : "#FFFFFF",
+			rgb : "255,255,255"
+		},
+		c2 : {
+			hex : "#B200FF",
+			rgb : "178,0,255"
+		},
+		c3 : {
+			hex : "#0094FF",
+			rgb : "0,148,255"
+		},
+		c4 : {
+			hex : "#00FF21",
+			rgb : "0,255,33"
+		},
+		c5 : {
+			hex : "#FFD800",
+			rgb : "255,216,0"
+		},
+		c6 : {
+			hex : "#FF6A00",
+			rgb : "255,106,0"
+		},
+		c7 : {
+			hex : "#FF0000",
+			rgb : "255,0,0"
+		}
 	};
 
 	//Here is the table with the keys to the colours. Each key needs to be
 	//uniquely defined so the values can be linked up on the table,
 	//to allow them to be updated and displayed dynamically.
 	$scope.table = {
-		row1 : ['black','c1','c2','c3','c4','c5','c6','c7'],
+		row1 : ['','c1','c2','c3','c4','c5','c6','c7'],
 		row2 : ['c1','ca1','ca2','ca3','ca4','ca5','ca6', 'ca7'],
 		row3 : ['c2','ca8','ca9','ca10','ca11','ca12','ca13', 'ca14'],
 		row4 : ['c3','ca15','ca16','ca17','ca18','ca19','ca20', 'ca21'],
@@ -68,17 +75,45 @@ colours.controller('ColourCtrl', function($scope, ColourMixer){
 	};
 
 	//Load page with the defaults calculated
-	$scope.calculatedColours = ColourMixer.calcColours($scope.colours, $scope.settings, null, null, false);
+	$scope.calculatedColours = ColourMixer.calcColours($scope.colours, $scope.settings, null, null, true);
 
 	//For the RGB values to be displayed in the table
 	$scope.getRGB = function(hex){
 		return ColourMixer.getRGB(hex);
 	}
 
+	$scope.getHex = function(rgb){
+		return ColourMixer.getHex(rgb);
+	}
+
 	//Cal-cu-late!
 	$scope.calcColours = function(colours, settings, currentIndex, currentColour, isRGB){
-		//debugger;
-		$scope.calculatedColours = ColourMixer.calcColours(colours, settings, currentIndex, currentColour, isRGB)
+
+		//When editing, validate so that calcColours isn't called when a valid colour isn't there
+		var isValid = true;
+
+		if(currentIndex){
+			if(isRGB){
+				isValid = (ColourMixer.isValidRGB(currentColour) !== null) ? true : false;
+			}
+			else{
+				isValid = (ColourMixer.isValidHex(currentColour) !== null) ? true : false;
+			}
+		}
+
+		if(isValid){
+			$scope.calculatedColours = ColourMixer.calcColours(colours, settings, currentIndex, currentColour, isRGB);
+
+			//Update the input fields
+			if(currentIndex){
+				if(isRGB){
+
+				}
+				else{
+
+				}
+			}
+		}
 	}
 });
 
@@ -132,6 +167,9 @@ colours.factory('ColourMixer', function(){
 
 		//For getting the RGB value with alpha, placed upon a blank white HTML canvas.
 		applyWhiteBase : function(rgb, alpha){
+			//From this point, the rgb value will be an array for simplicity sake
+			rgb = rgb.split(',');
+
 			//Say you pass in 0.7, it implies a subtraction of 0.3 from 1 on a white background
 			alpha = 1 - alpha;
 
@@ -152,35 +190,17 @@ colours.factory('ColourMixer', function(){
 		},
 
 		calcColours : function(colours, settings, currentIndex, currentColour, isRGB){
-			//Here we create an array of all of the base colours with the first round of
-			//opacity applied to them
-			
+
+			//Create a copy of the colours so that the original values aren't touched			
 			var __colours = angular.copy(colours);
-			//debugger;
 
-			//If the Hex value is being edited, convert the colours to RGB
-			if(!isRGB){
-				for(var colour in __colours){
-					__colours[colour] = this.getRGB(__colours[colour]);
-				}
-			}
-
-			var whiteBase = []; //1979 Mobile Suit Gundam reference, anyone?
+			//Here we create an array of all of the base colours with the first round of
+			//opacity applied to them (1979 Mobile Suit Gundam reference, anyone?)
+			var whiteBase = [];
 
 			for(var colour in __colours){
-				whiteBase.push(this.applyWhiteBase(__colours[colour], settings.opacityA));
+				whiteBase.push(this.applyWhiteBase(__colours[colour].rgb, settings.opacityA));
 			}
-			//debugger;
-
-			// var whiteBase = [
-			// 	this.applyWhiteBase(this.getRGB(colours.c1), settings.opacityA),
-			// 	this.applyWhiteBase(this.getRGB(colours.c2), settings.opacityA),
-			// 	this.applyWhiteBase(this.getRGB(colours.c3), settings.opacityA),
-			// 	this.applyWhiteBase(this.getRGB(colours.c4), settings.opacityA),
-			// 	this.applyWhiteBase(this.getRGB(colours.c5), settings.opacityA),
-			// 	this.applyWhiteBase(this.getRGB(colours.c6), settings.opacityA),
-			// 	this.applyWhiteBase(this.getRGB(colours.c7), settings.opacityA)
-			// ];
 
 			//Fill the table the first time you load the page, or change either opacity value
 			if(!currentIndex){
@@ -197,42 +217,63 @@ colours.factory('ColourMixer', function(){
 			}
 			//For when colours are updated by the input fields, only update the colours that are affected
 			else{
-				//Check that it's a full hex string (eg. "#000000")
-				if(currentColour.length === 7){
-					var currentBase = this.applyWhiteBase(this.getRGB(currentColour), settings.opacityA);
-					var row = 0;
+				var currentBase = this.applyWhiteBase(currentColour, settings.opacityA);
+				var row = 0;
 
-					for(var index in this.calculatedColours){
+				for(var index in this.calculatedColours){
 
-						//If it's that colour's row...
-						if(index === currentIndex.toString()){
-							
-							var y = 0;
+					//If it's that colour's row...
+					if(index === currentIndex.toString()){
+						
+						var y = 0;
 
-							for(var colour in this.calculatedColours[index]){
-								this.calculatedColours[index][colour] = this.getHex(this.mixColours(currentBase, whiteBase[y], settings.opacityB));
-								y++;						
-							}
+						for(var colour in this.calculatedColours[index]){
+							this.calculatedColours[index][colour] = this.getHex(this.mixColours(currentBase, whiteBase[y], settings.opacityB));
+							y++;						
 						}
-						//... otherwise just update the one colour affected in that row
-						else{
-							var checkIndex = 1;
-							for(var colour in this.calculatedColours[index]){
-								if(checkIndex === currentIndex){
-									this.calculatedColours[index][colour] = this.getHex(this.mixColours(whiteBase[x], currentBase, settings.opacityB));
-								}
-								checkIndex++;
-							}
-						}
-
-						//Move down a row
-						row++;
 					}
+					//... otherwise just update the one colour affected in that row
+					else{
+
+						var checkIndex = 1;
+
+						for(var colour in this.calculatedColours[index]){
+							if(checkIndex === currentIndex){
+								this.calculatedColours[index][colour] = this.getHex(this.mixColours(whiteBase[row], currentBase, settings.opacityB));
+							}
+							checkIndex++;
+						}
+					}
+
+					//Move down a row
+					row++;
 				}
 			}
+			debugger;
+			//Finally, update the original values
+			// if(isRGB){
+			// 	for(var colour in colours){
+			// 		colours[colour].hex = this.getHex(colours[colour].rgb);
+			// 	}
+			// }
+			// else{
+			// 	for(var colour in colours){
+			// 		colours[colour].rgb = this.getRGB(colours[colour].hex);
+			// 	}
+			// }
 
 			//Return the calculated colours
 			return this.calculatedColours;
+		},
+
+		isValidRGB : function(rgb){
+			var exp = /(\d{1,3}),(\d{1,3}),(\d{1,3})/;
+			return exp.exec(rgb);
+		},
+
+		isValidHex : function(hex){
+			var exp = /^#([0-9a-fA-F]{3}){1,2}$/i;
+			return exp.exec(rgb);
 		}
 	}
 });
