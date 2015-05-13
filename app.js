@@ -22,9 +22,17 @@ var colours = angular.module('colours', []);
 */
 colours.controller('ColourCtrl', function($scope, ColourMixer){
 
-	//Initialize the app with the base colours defined
+	//Opacity ratio settings
+	$scope.settings = {
+		opacityA : 0.7,
+		opacityB : 0.3
+	};
+
+	//To display average opacity
+	//$scope.greyScale = ColourMixer.getHex(ColourMixer.applyWhiteBase([0,0,0], (($scope.settings.opacityA + $scope.settings.opacityB) / 2)));
+
+	//Initialize the app with the base colours defined...
 	$scope.colours = {
-		black : '#000000',
 		c1 : "#FFFFFF",
 		c2 : "#B200FF",
 		c3 : "#0094FF",
@@ -32,6 +40,17 @@ colours.controller('ColourCtrl', function($scope, ColourMixer){
 		c5 : "#FFD800",
 		c6 : "#FF6A00",
 		c7 : "#FF0000"
+	};
+
+	//... along with their respective RGB values
+	$scope.coloursRGB = {
+		c1 : ColourMixer.getRGB($scope.colours.c1),
+		c2 : ColourMixer.getRGB($scope.colours.c2),
+		c3 : ColourMixer.getRGB($scope.colours.c3),
+		c4 : ColourMixer.getRGB($scope.colours.c4),
+		c5 : ColourMixer.getRGB($scope.colours.c5),
+		c6 : ColourMixer.getRGB($scope.colours.c6),
+		c7 : ColourMixer.getRGB($scope.colours.c7)
 	};
 
 	//Here is the table with the keys to the colours. Each key needs to be
@@ -48,14 +67,8 @@ colours.controller('ColourCtrl', function($scope, ColourMixer){
 		row8 : ['c7','ca43','ca44','ca45','ca46','ca47','ca48', 'ca49']
 	};
 
-	//Opacity ratio settings
-	$scope.settings = {
-		opacityA : 0.7,
-		opacityB : 0.3
-	};
-
 	//Load page with the defaults calculated
-	$scope.calculatedColours = ColourMixer.calcColours($scope.colours, $scope.settings, null, null);
+	$scope.calculatedColours = ColourMixer.calcColours($scope.colours, $scope.settings, null, null, false);
 
 	//For the RGB values to be displayed in the table
 	$scope.getRGB = function(hex){
@@ -63,8 +76,9 @@ colours.controller('ColourCtrl', function($scope, ColourMixer){
 	}
 
 	//Cal-cu-late!
-	$scope.calcColours = function(colours, settings, currentIndex, currentColour){
-		$scope.calculatedColours = ColourMixer.calcColours(colours, settings, currentIndex, currentColour)
+	$scope.calcColours = function(colours, settings, currentIndex, currentColour, isRGB){
+		//debugger;
+		$scope.calculatedColours = ColourMixer.calcColours(colours, settings, currentIndex, currentColour, isRGB)
 	}
 });
 
@@ -137,18 +151,36 @@ colours.factory('ColourMixer', function(){
 			];
 		},
 
-		calcColours : function(colours, settings, currentIndex, currentColour){
+		calcColours : function(colours, settings, currentIndex, currentColour, isRGB){
 			//Here we create an array of all of the base colours with the first round of
 			//opacity applied to them
-			var whiteBase = [
-				this.applyWhiteBase(this.getRGB(colours.c1), settings.opacityA),
-				this.applyWhiteBase(this.getRGB(colours.c2), settings.opacityA),
-				this.applyWhiteBase(this.getRGB(colours.c3), settings.opacityA),
-				this.applyWhiteBase(this.getRGB(colours.c4), settings.opacityA),
-				this.applyWhiteBase(this.getRGB(colours.c5), settings.opacityA),
-				this.applyWhiteBase(this.getRGB(colours.c6), settings.opacityA),
-				this.applyWhiteBase(this.getRGB(colours.c7), settings.opacityA)
-			];//1979 Gundam reference, anyone?
+			
+			var __colours = angular.copy(colours);
+			//debugger;
+
+			//If the Hex value is being edited, convert the colours to RGB
+			if(!isRGB){
+				for(var colour in __colours){
+					__colours[colour] = this.getRGB(__colours[colour]);
+				}
+			}
+
+			var whiteBase = []; //1979 Mobile Suit Gundam reference, anyone?
+
+			for(var colour in __colours){
+				whiteBase.push(this.applyWhiteBase(__colours[colour], settings.opacityA));
+			}
+			//debugger;
+
+			// var whiteBase = [
+			// 	this.applyWhiteBase(this.getRGB(colours.c1), settings.opacityA),
+			// 	this.applyWhiteBase(this.getRGB(colours.c2), settings.opacityA),
+			// 	this.applyWhiteBase(this.getRGB(colours.c3), settings.opacityA),
+			// 	this.applyWhiteBase(this.getRGB(colours.c4), settings.opacityA),
+			// 	this.applyWhiteBase(this.getRGB(colours.c5), settings.opacityA),
+			// 	this.applyWhiteBase(this.getRGB(colours.c6), settings.opacityA),
+			// 	this.applyWhiteBase(this.getRGB(colours.c7), settings.opacityA)
+			// ];
 
 			//Fill the table the first time you load the page, or change either opacity value
 			if(!currentIndex){

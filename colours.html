@@ -17,9 +17,14 @@
 			input {
 				width: 96px;
 			}
+			#opacity-cell tr td {
+				width: 49px;
+			}
+			#opacity-cell tr td input {
+				width: 93%;
+			}
 			.opacity-input {
-				width: 36%;
-				display: inline;
+				color: rgba(0, 0, 0, 1);
 			}
 			#colon {
 				padding-left: 3px;
@@ -34,34 +39,47 @@
 			<table>
 				<tr ng-repeat='row in table track by $index'>
 					
+					<!-- Opacity controls -->
+					<td ng-if="$index == 0">
+						<table id="opacity-cell">
+							<tr>
+								<td style="background : rgba(0, 0, 0, {{settings.opacityA}});">
+									<input 
+										ng-model="settings.opacityA" 
+										class="opacity-input" 
+										ng-keyup="calcColours(colours, settings, null, null)" 
+										ng-show="$parent.$index == 0"
+									/>
+								</td>
+								<td style="background : rgba(0, 0, 0, {{settings.opacityB}});">
+									<input 
+										ng-model="settings.opacityB" 
+										class="opacity-input" 
+										ng-keyup="calcColours(colours, settings, null, null)" 
+										ng-show="$parent.$index == 0"
+									/>
+								</td>
+							</tr>
+						</table>
+					</td>
+
 					<!-- Show base colour and controls -->
 					<td 
-						ng-if="$parent.$index == 0" 
+						ng-if="$parent.$index == 0 && $index != 0" 
 						ng-repeat="column in row track by $index"
 						style="background-color : {{ colours[column] }}"
 					>
 						<!-- Colour controls -->
 						<input 
 							ng-model="colours[column]" 
-							ng-keyup="calcColours(colours, settings, $index, colours[column])" 
+							ng-keyup="calcColours(colours, settings, $index, colours[column], false)" 
 							ng-show="$parent.$index != 0"
 						/>
-
-						<!-- Opacity controls -->
-						<input 
-							ng-model="settings.opacityA" 
-							class="opacity-input" 
-							ng-keyup="calcColours(colours, settings, null, null)" 
-							ng-show="$parent.$index == 0"
+						<input
+							ng-model="RGB[column]"
+							ng-keyup="calcColours(coloursRGB, settings, $index, coloursRGB[column], true)"
+							ng-show="$parent.$index != 0"
 						/>
-						<span id="colon" ng-show="$parent.$index == 0">:</span>
-						<input 
-							ng-model="settings.opacityB" 
-							class="opacity-input" 
-							ng-keyup="calcColours(colours, settings, null, null)" 
-							ng-show="$parent.$index == 0"
-						/>
-						
 					</td>
 
 					<!-- Show calculated colours -->
