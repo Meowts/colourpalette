@@ -3,7 +3,7 @@
 *	ColourMixer! By Benjamin Coleman aka Meowts
 *	May 2015
 *
-*	The premis of this lil' app is to create a unified colour palette from whichever base colours you choose.
+*	The purpose of this lil' app is to create a unified colour palette from whichever base colours you choose.
 *	It will also display the calculated colours' respective Hex and RGB values. Handy!
 *
 */
@@ -90,38 +90,36 @@ colours.controller('ColourCtrl', function($scope, ColourMixer){
 		//Validate Colour
 		if(currentIndex){
 			$scope.validColour = $scope.isValidColour(currentColour, isRGB);
+			if(!$scope.validColour) return;
 		}
 
-		//Validate opacity
+		//Validate Opacity
 		$scope.validOpacity = $scope.isValidOpacity($scope.opacity);
+		if(!$scope.validOpacity) return;
+	
+		$scope.calculatedColours = ColourMixer.calcColours($scope.colours, $scope.opacity, currentIndex, currentColour);
 
-		if($scope.validColour && $scope.validOpacity){
-			$scope.calculatedColours = ColourMixer.calcColours($scope.colours, $scope.opacity, currentIndex, currentColour);
-
-			//Update the input fields
-			if(currentIndex){
-				if(isRGB) $scope.colours['c' + currentIndex].hex = $scope.getHex($scope.colours['c' + currentIndex].rgb);
-				else $scope.colours['c' + currentIndex].rgb = $scope.getRGB($scope.colours['c' + currentIndex].hex);
-			}
+		//Update the input fields
+		if(currentIndex){
+			if(isRGB) $scope.colours['c' + currentIndex].hex = $scope.getHex($scope.colours['c' + currentIndex].rgb);
+			else $scope.colours['c' + currentIndex].rgb = $scope.getRGB($scope.colours['c' + currentIndex].hex);
 		}
 	}
 
 	$scope.isValidColour = function(currentColour, isRGB){
 		var valid = true;
 
-		if(isRGB && !ColourMixer.isValidRGB(currentColour.rgb)) valid = false;
-		if(!isRGB && !ColourMixer.isValidHex(currentColour.hex)) valid = false;
+		if(isRGB && !ColourMixer.isValidRGB(currentColour.rgb)) return false;
+		if(!isRGB && !ColourMixer.isValidHex(currentColour.hex)) return false;
 
-		return valid;	
+		return true;
 	}
 
-	$scope.isValidOpacity = function(opacity){
-		var valid = true;
-		
-		if(!ColourMixer.isValidOpacity(opacity.A)) valid = false;
-		if(!ColourMixer.isValidOpacity(opacity.B)) valid = false;
+	$scope.isValidOpacity = function(opacity){		
+		if(!ColourMixer.isValidOpacity(opacity.A)) return false;
+		if(!ColourMixer.isValidOpacity(opacity.B)) return false;
 
-		return valid;
+		return true;
 	}
 });
 
@@ -135,7 +133,7 @@ colours.controller('ColourCtrl', function($scope, ColourMixer){
 colours.factory('ColourMixer', function(){
 	return {
 
-		//An container with keys to hold the calculated colour values
+		//A container with keys to hold the calculated colour values
 		calculatedColours : {
 			1 : { ca1:"",ca2:"",ca3:"",ca4:"",ca5:"",ca6:"",ca7:""},
 			2 : { ca8:"",ca9:"",ca10:"",ca11:"",ca12:"",ca13:"",ca14:""},
@@ -150,10 +148,12 @@ colours.factory('ColourMixer', function(){
 		//so with this you could pass in either a string or an array to those functions
 		//("255,0,50" or [255,0,50]) and it will return an array
 		prepRGB : function(rgb){
+			//Check if string
 			if(typeof rgb === 'string'){
 				rgb = rgb.split(',');
 			}
 
+			//Convert all stringy numbers to integers
 			for(var i = 0; i < rgb.length; i++){
 				if(typeof rgb[i] === 'string'){
 					rgb[i] = parseInt(rgb[i]);
@@ -198,6 +198,9 @@ colours.factory('ColourMixer', function(){
 
 			hex.push(a); hex.push(b); hex.push(c);
 
+			//Add leading 0 for single character results 
+			//i.e. decimal:'10' == hex:'a', and will need to be '0a' in order to be parsed 
+			//by the browser as a correct CSS background-color value
 			for(var x = 0; x < 3; x++){
 				if(hex[x].length === 1) 
 					hex[x] = "0" + hex[x];
@@ -210,7 +213,7 @@ colours.factory('ColourMixer', function(){
 		applyWhiteBase : function(rgb, alpha){
 			rgb = this.prepRGB(rgb);
 			
-			//Say you pass in 0.7, it implies a subtraction of 0.3 from 1 on a white background
+			//Say you pass in 0.7 opacity, it implies a subtraction of 0.3 from 1 on a white background
 			alpha = 1 - alpha;
 
 			return [

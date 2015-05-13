@@ -30,9 +30,6 @@
 			.colour-cell {
 				transition: background-color 0.3s linear;
 			}
-			.isValid {
-				border-color: red;
-			}
 		</style>
 	</head>
 
@@ -76,13 +73,11 @@
 					>
 						<!-- Colour controls -->
 						<input
-							ng-class="colours[column]['isValid']"
 							ng-model="colours[column]['hex']" 
 							ng-keyup="update($index, colours[column], false)" 
 							ng-show="$parent.$index != 0"
 						/>
 						<input
-							ng-class="colours[column]['isValid']"
 							ng-model="colours[column]['rgb']"
 							ng-keyup="update($index, colours[column], true)"
 							ng-show="$parent.$index != 0"
