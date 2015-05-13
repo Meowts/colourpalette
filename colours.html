@@ -19,6 +19,7 @@
 			}
 			#opacity-cell tr td {
 				width: 49px;
+				transition: background 0.3s linear;
 			}
 			#opacity-cell tr td input {
 				width: 93%;
@@ -26,10 +27,11 @@
 			.opacity-input {
 				color: rgba(0, 0, 0, 1);
 			}
-			#colon {
-				padding-left: 3px;
-				padding-right: 4px;
-				color: white;
+			.colour-cell {
+				transition: background-color 0.3s linear;
+			}
+			.isValid {
+				border-color: red;
 			}
 		</style>
 	</head>
@@ -43,19 +45,21 @@
 					<td ng-if="$index == 0">
 						<table id="opacity-cell">
 							<tr>
-								<td style="background : rgba(0, 0, 0, {{settings.opacityA}});">
+								<td style="background : rgba(0, 0, 0, {{opacity.A}});">
 									<input 
-										ng-model="settings.opacityA" 
-										class="opacity-input" 
-										ng-keyup="calcColours(colours, settings, null, null, false)" 
+										maxlength=5
+										class="opacity-input"
+										ng-model="opacity.A"  
+										ng-keyup="update(null, null, null)" 
 										ng-show="$parent.$index == 0"
 									/>
 								</td>
-								<td style="background : rgba(0, 0, 0, {{settings.opacityB}});">
+								<td style="background : rgba(0, 0, 0, {{opacity.B}});">
 									<input 
-										ng-model="settings.opacityB" 
-										class="opacity-input" 
-										ng-keyup="calcColours(colours, settings, null, null, false)" 
+										maxlength=5										
+										class="opacity-input"
+										ng-model="opacity.B"  
+										ng-keyup="update(null, null, null)"
 										ng-show="$parent.$index == 0"
 									/>
 								</td>
@@ -65,25 +69,29 @@
 
 					<!-- Show base colour and controls -->
 					<td 
+						class="colour-cell"
 						ng-if="$parent.$index == 0 && $index != 0" 
 						ng-repeat="column in row track by $index"
 						style="background-color : {{ colours[column]['hex'] }}"
 					>
 						<!-- Colour controls -->
-						<input 
+						<input
+							ng-class="colours[column]['isValid']"
 							ng-model="colours[column]['hex']" 
-							ng-keyup="calcColours(colours, settings, $index, colours[column]['hex'], false)" 
+							ng-keyup="update($index, colours[column], false)" 
 							ng-show="$parent.$index != 0"
 						/>
 						<input
+							ng-class="colours[column]['isValid']"
 							ng-model="colours[column]['rgb']"
-							ng-keyup="calcColours(colours, settings, $index, colours[column]['rgb'], true)"
+							ng-keyup="update($index, colours[column], true)"
 							ng-show="$parent.$index != 0"
 						/>
 					</td>
 
 					<!-- Show calculated colours -->
 					<td 
+						class="colour-cell"
 						ng-if="$parent.$index != 0" ng-repeat="column in row track by $index"
 						ng-style="$index != 0 ? { 'background-color' : calculatedColours[$parent.$parent.$index][column] } : { 'background-color' : colours[column]['hex'] }"
 					>
