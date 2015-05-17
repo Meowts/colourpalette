@@ -85,13 +85,9 @@
 					</td>
 
 					<!-- Show calculated colours -->
-					<td 
-						class="colour-cell"
-						ng-if="$parent.$index != 0" ng-repeat="column in row track by $index"
-						ng-style="$index != 0 ? { 'background-color' : calculatedColours[$parent.$parent.$index][column] } : { 'background-color' : colours[column]['hex'] }"
-					>
-						{{ calculatedColours[$parent.$parent.$index][column] }}
-						{{ $index != 0 ? getRGB(calculatedColours[$parent.$parent.$index][column]) : '' }}
+					<td class="colour-cell" ng-if="$parent.$index != 0" ng-repeat="column in row track by $index" ng-style="$index != 0 ? { 'background-color' : calculatedColours[$parent.$parent.$index][column] } : { 'background-color' : colours[column]['hex'] }">
+						<span>{{ calculatedColours[$parent.$parent.$index][column] }}</span>
+						<span>{{ $index != 0 ? getRGB(calculatedColours[$parent.$parent.$index][column]) : '' }}</span>
 					</td>
 				</tr>
 			</table>
