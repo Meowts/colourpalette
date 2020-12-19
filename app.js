@@ -1,23 +1,18 @@
 /*
 *
-*	ColourMixer! By Benjamin Coleman aka Meowts
+*	ColourMixer! By Benjamin Coleman
 *	May 2015
 *
-*	The purpose of this lil' app is to create a unified colour palette from whichever base colours you choose.
+*	This tool is to create a unified colour palette from a set of base colours you choose.
 *	It will also display the calculated colours' respective Hex and RGB values. Handy!
 *
 */
 
-
-
-//Initialize angular module
-var colours = angular.module('colours', []);
-
-
+const colours = angular.module('colours', []);
 
 /*
 *
-*	Colour controller for the DOM
+*	Colour controller
 *
 */
 colours.controller('ColourCtrl', function($scope, ColourMixer){
@@ -78,7 +73,7 @@ colours.controller('ColourCtrl', function($scope, ColourMixer){
 	$scope.validOpacity = true;
 
 	//Load page with the defaults calculated
-	$scope.calculatedColours = ColourMixer.calcColours($scope.colours, $scope.opacity, null, null, null);
+	$scope.calculatedColours = ColourMixer.calcColours($scope.colours, $scope.opacity);
 
 	$scope.getRGB = function(hex){ return ColourMixer.getRGB(hex); }
 
