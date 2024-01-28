@@ -1,8 +1,8 @@
-##ColourMixer!
+## ColourMixer!
 
 Have fun mixing colours!
 
-##How to use
+## How to use
 
 Just clone or download this repos and open up colours.html in your favourite browser. That's it, no server required, just an AngularJS app that runs from your filesystem.
 
